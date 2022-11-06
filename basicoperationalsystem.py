@@ -11,10 +11,10 @@ USER_FILE = 'users.txt'
 ERRO_MENSAGEM = 'Erro: '
 #mensagens
 
-DIRETORIO_MENSAGEM = ' - Nome do diretorio: '
+DIRETORIO_MENSAGEM = ' - Nome do diretório: '
 ARQUIVO_MENSAGEM = ' - Nome do arquivo: '
 
-#criar um diretorio e trata se não for mandado todos os argumentos
+#criar um diretório e trata se não for mandado todos os argumentos
 def create_dir(dir_name):
     if not os.path.exists(dir_name):
         try:
@@ -22,7 +22,7 @@ def create_dir(dir_name):
         except OSError as e:
             print(ERRO_MENSAGEM + str(e))
 
-#exclui um diretorio e tratar se a pasta não estiver vazia e perguntando se deseja excluir assim mesmo, 
+#exclui um diretório e tratar se a pasta não estiver vazia e perguntando se deseja excluir assim mesmo, 
 # trata se não for mandado todos os argumentos
 def delete_dir(dir_name):
     if os.path.exists(dir_name):
@@ -34,7 +34,7 @@ def delete_dir(dir_name):
             if input('Digite s para sim e n para não: ') == 's':
                 shutil.rmtree(dir_name)
     
-#copia um diretorio
+#copia um diretório
 # trata se não for mandado todos os argumentos
 def copy_dir(dir_name, new_dir_name):
     if os.path.exists(dir_name):
@@ -46,25 +46,25 @@ def copy_dir(dir_name, new_dir_name):
             if input('Digite s para sim e n para não: ') == 's':
                 shutil.copytree(dir_name, new_dir_name, ignore=shutil.ignore_patterns('*.pyc', 'tmp*'))
 
-#muda de diretorio
+#muda de diretório
 def change_dir(dir_name):
     if os.path.exists(dir_name):
         os.chdir(dir_name)
 
-#exibe o conteudo do diretorio
+#exibe o conteudo do diretório
 def list_dir():
-    print('Diretorio: ' + get_current_dir())
+    print('Diretório: ' + get_current_dir())
     for item in os.listdir('.'):
         if os.path.isdir(item):
             print(DIRETORIO_MENSAGEM + item)
         else:
             print(ARQUIVO_MENSAGEM + item)
 
-#exibe o caminho relativo do diretorio atual
+#exibe o caminho relativo do diretório atual
 def get_current_dir():
     return os.getcwd()
 
-#exibe o caminho absoluto do diretorio atual
+#exibe o caminho absoluto do diretório atual
 def get_current_dir_abs():
     return os.path.abspath('.')
 
@@ -83,7 +83,7 @@ def delete_file(file_name):
             if os.path.isfile(item) and item.split('.')[0] == file_name:
                 os.remove(item)
 
-#move um arquivo para um diretorio
+#move um arquivo para um diretório
 def move_file_to_dir(file_name, dir_name):
     if os.path.isfile(file_name):
         shutil.move(file_name, dir_name)
@@ -93,10 +93,16 @@ def compress_file(file_name, new_file_name):
     if os.path.isfile(file_name):
         shutil.make_archive(new_file_name, 'zip', './' ,file_name)
 
-#Copia um arquivo para outro diretorio
-def copy_file_to_dir(file_name, dir_name):
+#copia um arquivo de um diretório se o diretório não existir ele pergunta se é para criar
+def copy_file_from_dir(file_name, dir_name):
     if os.path.isfile(file_name):
-        shutil.copy(file_name, dir_name)
+        if os.path.isdir(dir_name):
+            shutil.copy(file_name, dir_name)
+        else:
+            print('Diretório não existe')
+            if input('Deseja criar o diretório? Digite s para sim e n para não: ') == 's':
+                create_dir(dir_name)
+                shutil.copy(file_name, dir_name)
 
 #Copia o arquivo e renomeia
 def copy_file(file_name, new_file_name):
@@ -122,7 +128,7 @@ def login(user_name, password):
                     return True
     return False
 
-#comando para limpar a tela
+#limpar a tela 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -130,18 +136,18 @@ def clear():
 def help():
     print('''
         Comandos:
-        create_dir <dir_name> - cria um diretorio
-        list_dir - lista o conteudo do diretorio
-        delete_dir <dir_name> - exclui um diretorio
-        copy_dir <dir_name> <new_dir_name> - copia um diretorio
-        change_dir <dir_name> - muda de diretorio
-        get_current_dir - exibe o caminho relativo do diretorio atual
-        get_current_dir_abs - exibe o caminho absoluto do diretorio atual
+        create_dir <dir_name> - cria um diretório
+        list_dir - lista o conteúdo do diretório
+        delete_dir <dir_name> - exclui um diretório
+        copy_dir <dir_name> <new_dir_name> - copia um diretório
+        change_dir <dir_name> - muda de diretório
+        get_current_dir - exibe o caminho relativo do diretório atual
+        get_current_dir_abs - exibe o caminho absoluto do diretório atual
         create_file <file_name> - cria um arquivo
-        move_file_to_dir <file_name> <dir_name> - move um arquivo para um diretorio
+        move_file_to_dir <file_name> <dir_name> - move um arquivo para um diretório
         delete_file <file_name> - exclui um arquivo
         compress_file <file_name> <new_file_name> - comprime um arquivo para .zip
-        copy_file_to_dir <file_name> <dir_name> - copia um arquivo para outro diretorio
+        copy_file_to_dir <file_name> <dir_name> - copia um arquivo para outro diretório
         copy_file <file_name> <new_file_name> - copia o arquivo e renomeia
     ''')
 
@@ -187,8 +193,8 @@ if __name__ == '__main__':
             move_file_to_dir(command[1], command[2])
         elif command[0] == 'compress_file':
             compress_file(command[1], command[2])
-        elif command[0] == 'copy_file_to_dir':
-            copy_file_to_dir(command[1], command[2])
+        elif command[0] == 'copy_file_from_dir':
+            copy_file_from_dir(command[1], command[2])
         elif command[0] == 'copy_file':
             copy_file(command[1], command[2])
         elif command[0] == 'list_dir':
